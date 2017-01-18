@@ -5,18 +5,36 @@ public class ArrayStorage {
     Resume[] storage = new Resume[10000];
     int lastEl = 0;
 
+    //override not null cells of array
     void clear() {
-        for (int i = 0; i<= lastEl; i++) {
-            System.arraycopy(storage,0,new Resume[lastEl],0,lastEl);
-        }
+        System.arraycopy(storage,0,new Resume[lastEl],0,lastEl);
         lastEl = 0;
     }
 
+    /*
+    * add new resume to the end of the array,
+    * if resume already exist, write message about it.
+    * check empty space for adding new resume.
+    */
     void save(Resume r) {
-        storage[lastEl] = r;
-        lastEl++;
+        if(!isFull()) {
+            String uuid = r.getUuid();
+            if(findPosition(r.getUuid()) == -1) {
+                storage[lastEl] = r;
+                lastEl++;
+            } else {
+                System.out.println("Resume already in storage");
+            }
+        } else {
+            System.out.println("Storage is full, can't save resume");
+        }
+
     }
 
+    /*
+    * finding resume by uuid,
+    * return null-resume if not found.
+    */
     Resume get(String uuid) {
         Resume result = new Resume();
         for (Resume resume : storage) {
@@ -32,12 +50,22 @@ public class ArrayStorage {
         return result;
     }
 
+    /*
+    * delete resume from storage by shifted array's tail to the left at one cell.
+    */
     void delete(String uuid) {
-        for(int i = 0; i < lastEl; i++) {
-            if(storage[i].getUuid().equals(uuid)) {
-                System.arraycopy(storage,i+1,storage,i, lastEl -i);
-                lastEl--;
-            }
+        if (isEmpty()) {
+            return;
+        }
+        int position = findPosition(uuid);
+        if((position == lastEl-1)) {
+            storage[position] = null;
+            lastEl--;
+        } else if(position < 0) {
+            System.out.println("Resume not found"); //will we use some notification if resume not found?
+        } else {
+            System.arraycopy(storage, position+1, storage, position, lastEl-position-1);
+            lastEl--;
         }
     }
 
@@ -52,5 +80,27 @@ public class ArrayStorage {
 
     int size() {
         return lastEl;
+    }
+
+    boolean isFull() {
+        return (lastEl == storage.length);
+    }
+
+    boolean isEmpty() {
+        return (lastEl == 0);
+    }
+
+
+    int findPosition(String uuid) {
+        int position = -1; // if resume not found return -1
+        if (!isEmpty()) {
+            for(int i=0; i<lastEl; i++) {
+                if(storage[i].getUuid().equals(uuid)) {
+                    position = i;
+                    break;
+                }
+            }
+        }
+        return position;
     }
 }
