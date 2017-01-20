@@ -2,12 +2,19 @@
  * Array based storage for Resumes
  */
 public class ArrayStorage {
-    Resume[] storage = new Resume[10000];
+    int capacity = 10000;
+    Resume[] storage = new Resume[capacity];
     int lastEl = 0;
 
     //override not null cells of array
     void clear() {
         System.arraycopy(storage,0,new Resume[lastEl],0,lastEl);
+        lastEl = 0;
+    }
+
+    //it's not good, because used more ram
+    void clearNewArray() {
+        storage = new Resume[capacity];
         lastEl = 0;
     }
 
@@ -65,6 +72,23 @@ public class ArrayStorage {
             System.out.println("Resume not found"); //will we use some notification if resume not found?
         } else {
             System.arraycopy(storage, position+1, storage, position, lastEl-position-1);
+            lastEl--;
+        }
+    }
+
+    void deleteThroughReplace(String uuid) {
+        int position = findPosition(uuid);
+        if (isEmpty()) {
+            return;
+        }
+        if((position == lastEl-1)) {
+            storage[position] = null;
+            lastEl--;
+        } else if(position < 0) {
+            System.out.println("Resume not found"); //will we use some notification if resume not found?
+        } else {
+            storage[position] = storage[lastEl-1];
+            storage[lastEl-1] = null;
             lastEl--;
         }
     }
