@@ -18,7 +18,6 @@ public class ArrayStorage {
     */
     void save(Resume r) {
         if(!isFull()) {
-            String uuid = r.getUuid();
             if(getIndex(r.getUuid()) == -1) {
                 storage[size] = r;
                 size++;
@@ -32,36 +31,42 @@ public class ArrayStorage {
     }
 
     /*
+    * replace existed resume.
+    * if resume not found write message "Resume not found".
+    */
+    void update(Resume r) {
+        int index = getIndex(r.getUuid());
+        if(index != -1) {
+            storage[index] = r;
+        } else {
+            System.out.println("Resume not found");
+        }
+    }
+
+    /*
     * finding resume by uuid,
     * return null-resume if not found.
     */
     Resume get(String uuid) {
         Resume result = new Resume();
-        for (Resume resume : storage) {
-            if (resume != null) {
-                if (resume.getUuid().equals(uuid)) {
-                    result = resume;
-                    break;
-                }
-            } else {
-                break;
-            }
+        int index = getIndex(uuid);
+        if (index != -1) {
+            return storage[index];
+        } else {
+            System.out.println("Resume not found");
         }
         return result;
     }
 
     void delete(String uuid) {
-        int position = getIndex(uuid);
-        if (isEmpty()) {
-            return;
-        }
-        if((position == size -1)) {
-            storage[position] = null;
+        int index = getIndex(uuid);
+        if(index == -1) {
+            System.out.println("Resume not found");
+        } else if((index == size -1)) {
+            storage[index] = null;
             size--;
-        } else if(position < 0) {
-            System.out.println("Resume not found"); //will we use some notification if resume not found?
         } else {
-            storage[position] = storage[size -1];
+            storage[index] = storage[size -1];
             storage[size -1] = null;
             size--;
         }
@@ -88,8 +93,7 @@ public class ArrayStorage {
         return (size == 0);
     }
 
-
-    int getIndex(String uuid) {
+    private int getIndex(String uuid) {
         int position = -1; // if resume not found return -1
         if (!isEmpty()) {
             for(int i = 0; i< size; i++) {
