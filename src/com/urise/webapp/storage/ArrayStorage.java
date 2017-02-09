@@ -1,22 +1,21 @@
+package com.urise.webapp.storage;
+
+import com.urise.webapp.model.Resume;
+
+import java.util.Arrays;
+
 /**
  * Array based storage for Resumes
  */
-public class ArrayStorage {
-    int capacity = 10000;
-    Resume[] storage = new Resume[capacity];
-    int size = 0;
+public class ArrayStorage extends AbstractArrayStorage{
 
-    void clear() {
-        storage = new Resume[capacity];
-        size = 0;
-    }
 
     /*
     * add new resume to the end of the array,
     * if resume already exist, write message about it.
     * check empty space for adding new resume.
     */
-    void save(Resume r) {
+    public void save(Resume r) {
         if(!isFull()) {
             if(getIndex(r.getUuid()) == -1) {
                 storage[size] = r;
@@ -34,7 +33,7 @@ public class ArrayStorage {
     * replace existed resume.
     * if resume not found write message "Resume not found".
     */
-    void update(Resume r) {
+    public void update(Resume r) {
         int index = getIndex(r.getUuid());
         if(index != -1) {
             storage[index] = r;
@@ -47,18 +46,9 @@ public class ArrayStorage {
     * finding resume by uuid,
     * return null-resume if not found.
     */
-    Resume get(String uuid) {
-        Resume result = new Resume();
-        int index = getIndex(uuid);
-        if (index != -1) {
-            return storage[index];
-        } else {
-            System.out.println("Resume not found");
-        }
-        return result;
-    }
 
-    void delete(String uuid) {
+
+    public void delete(String uuid) {
         int index = getIndex(uuid);
         if(index == -1) {
             System.out.println("Resume not found");
@@ -75,14 +65,8 @@ public class ArrayStorage {
     /**
      * @return array, contains only Resumes in storage (without null)
      */
-    Resume[] getAll() {
-        Resume[] result = new Resume[size];
-        System.arraycopy(storage,0,result,0, size);
-        return result;
-    }
-
-    int size() {
-        return size;
+    public Resume[] getAll() {
+        return Arrays.copyOfRange(storage, 0, size);
     }
 
     boolean isFull() {
@@ -93,7 +77,7 @@ public class ArrayStorage {
         return (size == 0);
     }
 
-    private int getIndex(String uuid) {
+    protected int getIndex(String uuid) {
         int position = -1; // if resume not found return -1
         if (!isEmpty()) {
             for(int i = 0; i< size; i++) {
